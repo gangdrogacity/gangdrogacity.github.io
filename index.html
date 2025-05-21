@@ -7,27 +7,24 @@
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* Variables and theme */
-    :root { --bg-light:#f8f9fa; --bg-dark:#181818; --card-light:#fff; --card-dark:#242424; --text-light:#212529; --text-dark:#f1f1f1; --muted-light:#6c757d; --muted-dark:#bbb; --accent:#0d6efd; }
+    :root { --bg-light:#f8f9fa; --bg-dark:#181818; --card-light:#ffffff; --card-dark:#242424; --text-light:#212529; --text-dark:#f1f1f1; --muted-light:#6c757d; --muted-dark:#bbb; --accent:#0d6efd; }
     body { background:var(--bg-light); color:var(--text-light); transition:0.3s; overflow-x:hidden; }
-    .card { background:var(--card-light); color:var(--text-light); box-shadow:0 4px 6px rgba(0,0,0,0.1); border-radius:.75rem; opacity:0; transform:translateY(20px); animation:fadeUp 0.6s forwards; transition:transform 0.3s; }
+    .card { background:var(--card-light); color:var(--text-light); box-shadow:0 4px 6px rgba(0,0,0,0.1); border-radius:.75rem; opacity:0; transform:translateY(20px); animation:fadeUp 0.6s forwards; transition:transform .3s; }
     .card:hover { transform:scale(1.03); box-shadow:0 8px 16px rgba(0,0,0,0.2); }
-    .btn { transition:transform 0.1s ease; }
+    .btn { transition:transform .1s ease; }
     .btn:active { transform:scale(0.97); }
     h1 { font-weight:300; }
     @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
-    .btn-accent { background:var(--accent); color:#fff; font-weight:bold; padding:.75rem 1.5rem; border-radius:2rem; box-shadow:0 4px 10px rgba(13,110,253,0.4); animation:pulse 2s infinite; transition:0.3s; }
+    .btn-accent { background:var(--accent); color:#fff; font-weight:bold; padding:.75rem 1.5rem; border-radius:2rem; box-shadow:0 4px 10px rgba(13,110,253,0.4); animation:pulse 2s infinite; transition:background .3s,transform .3s; }
     .btn-accent:hover { background:#0b5ed7; transform:scale(1.05); }
     @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(13,110,253,0.7);}70%{box-shadow:0 0 0 10px rgba(13,110,253,0);}100%{box-shadow:0 0 0 0 rgba(13,110,253,0);} }
     .btn-purple { background:#6f42c1; color:#fff; transition:transform .1s; }
     .btn-purple:hover { background:#5936a1; transform:scale(1.02); }
-    /* Dark mode */
     .dark-mode body { background:var(--bg-dark); color:var(--text-dark); }
     .dark-mode .card { background:var(--card-dark); color:var(--text-dark); box-shadow:0 4px 6px rgba(255,255,255,0.1); }
     .dark-mode .text-muted { color:var(--muted-dark) !important; }
     .dark-mode .modal-content, .dark-mode .modal-header, .dark-mode .modal-body, .dark-mode .modal-footer { background:var(--card-dark); color:var(--text-dark); }
     .dark-mode .btn-close { filter:invert(1); }
-    /* Floating alert */
     #dark-alert { position:fixed; bottom:1rem; right:1rem; z-index:1050; display:flex; align-items:center; background:rgba(255,255,255,0.9); color:var(--text-light); padding:.75rem 1rem; border-radius:.5rem; box-shadow:0 2px 6px rgba(0,0,0,0.15); opacity:0; transition:opacity .5s; }
     .dark-mode #dark-alert { background:rgba(32,32,32,0.9); color:var(--text-dark); }
     #dark-alert.show { opacity:1; }
@@ -35,22 +32,20 @@
   </style>
 </head>
 <body>
-  <!-- Dark mode alert -->
   <div id="dark-alert">Ti fanno male gli occhi? Perché non attivi la dark mode!<button class="close-alert" aria-label="Chiudi">×</button></div>
 
   <div class="container py-5">
-    <!-- Theme toggle -->
-    <div class="d-flex justify-content-end mb-3"><button id="theme-toggle" class="btn btn-sm btn-outline-secondary">Dark Mode</button></div>
+    <div class="d-flex justify-content-end mb-3">
+      <button id="theme-toggle" class="btn btn-sm btn-outline-secondary">Dark Mode</button>
+    </div>
     <h1 class="text-center mb-5">GDC Modpack Download Center</h1>
 
-    <!-- Hero card for latest release -->
     <div id="hero-card" class="card mb-5 text-center p-4" style="animation-delay:0ms;">
       <h2 class="mb-3">Scarica subito l'ultima release</h2>
       <p class="mb-4 text-muted">Versione <span id="hero-version">...</span> pubblicata il <span id="hero-date">...</span></p>
       <button id="hero-download-btn" class="btn btn-lg btn-accent">Scarica Ora</button>
     </div>
 
-    <!-- Requisiti -->
     <div class="card mb-5" style="animation-delay:100ms;">
       <div class="card-body">
         <h5 class="card-title">Requisiti</h5>
@@ -61,7 +56,6 @@
       </div>
     </div>
 
-    <!-- Sezione Release -->
     <div class="card mb-5" style="animation-delay:200ms;">
       <div class="card-body">
         <h5 class="card-title mb-4">Releases</h5>
@@ -69,7 +63,6 @@
       </div>
     </div>
 
-    <!-- Installazione manuale GDC RP -->
     <div id="latest-card" class="card" style="animation-delay:300ms;">
       <div class="card-body d-flex align-items-center justify-content-between">
         <h5 class="card-title mb-0">Installazione manuale GDC RP</h5>
@@ -80,7 +73,6 @@
       </div>
     </div>
 
-    <!-- FAQ Forge -->
     <div class="card mt-5" style="animation-delay:400ms;">
       <div class="card-body">
         <h5 class="card-title mb-3">FAQ - Installazione di Forge</h5>
@@ -91,7 +83,7 @@
             </h2>
             <div id="faq1" class="accordion-collapse collapse" aria-labelledby="faq1-header" data-bs-parent="#faqForge">
               <div class="accordion-body">
-                Scarica il file installer da <a href="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.3.33/forge-1.20.1-47.3.33-installer.jar" target="_blank">qui</a>, quindi esegui il jar con Java (double-click o comando <code>java -jar forge-...-installer.jar</code>) e segui le istruzioni sullo schermo.
+                Scarica il file installer da <a href="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.3.33/forge-1.20.1-47.3.33-installer.jar" target="_blank">qui</a>, quindi esegui il jar con Java (double-click o comando <code>java -jar forge-...-installer.jar</code>) e segui le istruzioni.
               </div>
             </div>
           </div>
@@ -101,17 +93,17 @@
             </h2>
             <div id="faq2" class="accordion-collapse collapse" aria-labelledby="faq2-header" data-bs-parent="#faqForge">
               <div class="accordion-body">
-                Forge è una piattaforma di caricamento di mod che assicura compatibilità e gestione delle dipendenze necessarie per far funzionare GDC Modpack correttamente.
+                Forge è una piattaforma di caricamento mod che gestisce le dipendenze necessarie per eseguire GDC Modpack correttamente.
               </div>
             </div>
           </div>
           <div class="accordion-item">
             <h2 class="accordion-header" id="faq3-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">Ho già una versione di Forge precedente, posso usarla?</button>
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">Posso usare una versione diversa di Forge?</button>
             </h2>
             <div id="faq3" class="accordion-collapse collapse" aria-labelledby="faq3-header" data-bs-parent="#faqForge">
               <div class="accordion-body">
-                No, GDC Modpack richiede specificamente la versione 47.3.33 per garantire compatibilità con le mod incluse. Si consiglia di installarla ex novo.
+                No, è richiesta specificamente la versione 47.3.33 per garantire compatibilità con le mod incluse.
               </div>
             </div>
           </div>
@@ -120,16 +112,22 @@
     </div>
   </div>
 
-  <!-- Modal & Scripts -->
+  <!-- Modal -->
   <div class="modal fade" id="assetModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title">Scegli cosa scaricare</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body d-flex flex-column gap-3" id="modal-buttons"></div>
-      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button></div>
-    </div></div>
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Scegli cosa scaricare</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div id="modal-buttons" class="modal-body d-flex flex-column gap-3"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const repo = 'jamnaga/wtf-modpack';
@@ -138,6 +136,14 @@
     const darkAlert = document.getElementById('dark-alert');
     let latestRelease;
 
+    function showRateLimitError() {
+      const container = document.querySelector('.container');
+      const alert = document.createElement('div');
+      alert.className = 'alert alert-warning';
+      alert.textContent = 'GitHub API rate limit raggiunto. Riprova più tardi.';
+      container.prepend(alert);
+    }
+
     function applyTheme(dark) {
       document.documentElement.classList.toggle('dark-mode', dark);
       themeBtn.textContent = dark ? 'Light Mode' : 'Dark Mode';
@@ -145,16 +151,16 @@
     }
 
     function initTheme() {
-      const stored = localStorage.getItem('gdcThemeDark');
-      const dark = stored === 'true';
+      const dark = localStorage.getItem('gdcThemeDark') === 'true';
       applyTheme(dark);
       themeBtn.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.contains('dark-mode');
-        applyTheme(!isDark);
-        if (!isDark) hideDarkAlert();
+        const nowDark = document.documentElement.classList.toggle('dark-mode');
+        applyTheme(nowDark);
+        if (nowDark) hideDarkAlert();
       });
-      const dismissed = localStorage.getItem('gdcDarkAlertDismissed') === 'true';
-      if (!dark && !dismissed) setTimeout(() => darkAlert.classList.add('show'), 1000);
+      if (!dark && localStorage.getItem('gdcDarkAlertDismissed') !== 'true') {
+        setTimeout(() => darkAlert.classList.add('show'), 1000);
+      }
     }
 
     function hideDarkAlert() {
@@ -162,37 +168,100 @@
       localStorage.setItem('gdcDarkAlertDismissed', 'true');
     }
 
-    darkAlert.querySelector('.close-alert').addEventListener('click', hideDarkAlert);
+    function setupHero(rel) {
+      document.getElementById('hero-version').textContent = rel.tag_name;
+      document.getElementById('hero-date').textContent = new Date(rel.published_at).toLocaleDateString('it-IT', { day:'2-digit', month:'2-digit', year:'numeric' });
+    }
+
+    function openAssetModal() {
+      const modalBody = document.getElementById('modal-buttons');
+      modalBody.innerHTML = '';
+      latestRelease.assets.forEach(asset => {
+        let label = '', cls = 'btn-secondary';
+        const name = asset.name.toLowerCase();
+        if (name === 'server.zip') { label='Server'; cls='btn-primary'; }
+        else if (name === 'client.zip') { label='Client Legacy'; cls='btn-warning text-dark'; }
+        else if (name.endsWith('.mrpack')) { label='Modrinth'; cls='btn-success'; }
+        else if (name === 'update.exe') { label='Installer'; cls='btn-purple'; }
+        if (label) {
+          const btn = document.createElement('a');
+          btn.className = `btn ${cls} w-100 mb-2`;
+          btn.href = asset.browser_download_url;
+          btn.textContent = `Scarica ${label}`;
+          btn.addEventListener('click', () => bootstrap.Modal.getInstance(document.getElementById('assetModal')).hide());
+          modalBody.appendChild(btn);
+        }
+      });
+      new bootstrap.Modal(document.getElementById('assetModal')).show();
+    }
+
+    function showReleaseCards(releases) {
+      const row = document.getElementById('releases-row');
+      row.innerHTML = '';
+      releases.forEach((rel, i) => {
+        const col = document.createElement('div'); col.className='col-12 col-md-6 col-lg-4';
+        const card = document.createElement('div'); card.className='card h-100'; card.style.animationDelay=`${(i+1)*100}ms`;
+        const body = document.createElement('div'); body.className='card-body d-flex flex-column';
+        const title = document.createElement('h6'); title.className='card-title'; title.textContent=rel.name||rel.tag_name; body.appendChild(title);
+        if (rel.published_at) {
+          const date = document.createElement('p'); date.className='card-text text-muted mb-3';
+          date.textContent=new Date(rel.published_at).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'});
+          body.appendChild(date);
+        }
+        const btnContainer=document.createElement('div'); btnContainer.className='mt-auto d-flex flex-wrap gap-2';
+        rel.assets.forEach(asset=>{
+          let label='', cls='btn-secondary'; const nm=asset.name.toLowerCase();
+          if (nm==='server.zip') { label='Download Server'; cls='btn-primary'; }
+          else if (nm==='client.zip') { label='Download Client Legacy'; cls='btn-warning text-dark'; }
+          else if (nm.endsWith('.mrpack')) { label='Download Modrinth'; cls='btn-success'; }
+          else if (nm==='update.exe') { label='Download Installer'; cls='btn-purple'; }
+          if (label) {
+            const a=document.createElement('a'); a.className=`btn ${cls} btn-sm`; a.href=asset.browser_download_url; a.textContent=label;
+            btnContainer.appendChild(a);
+          }
+        });
+        body.appendChild(btnContainer); card.appendChild(body); col.appendChild(card); row.appendChild(col);
+      });
+    }
+
+    async function checkLatest(releases) {
+      try {
+        const latestRel = releases[0];
+        const cmp = await fetch(`${apiRoot}/compare/${encodeURIComponent(latestRel.tag_name)}...latest`).then(r=>r.json());
+        const badge = document.getElementById('latest-status');
+        if (cmp.status==='identical'||cmp.status==='behind') {
+          badge.className='badge bg-success'; badge.textContent='Up-to-date';
+          const fc=document.querySelector('#releases-row .card'); if (fc) fc.classList.add('border','border-success','border-2');
+        } else {
+          badge.className='badge bg-secondary'; badge.textContent='Latest';
+          const fc=document.querySelector('#releases-row .card.border-success'); if (fc) fc.classList.remove('border','border-success','border-2');
+        }
+      } catch (e) { console.error('Errore nel checkLatest:', e); }
+    }
 
     async function init() {
       initTheme();
+      const cacheKey='gdcReleases', cacheTsKey='gdcReleasesTs', ttl=5*60*1000;
+      let releases; const now=Date.now();
       try {
-        const res = await fetch(`${apiRoot}/releases`);
-        if (res.status === 403) {
-          showRateLimitError();
-          return;
+        const cached=localStorage.getItem(cacheKey), ts=parseInt(localStorage.getItem(cacheTsKey),10)||0;
+        if (cached && now-ts<ttl) releases=JSON.parse(cached);
+        else {
+          const res=await fetch(`${apiRoot}/releases`);
+          if (res.status===403) { if (cached) releases=JSON.parse(cached); else { showRateLimitError(); return; } }
+          else { releases=await res.json(); localStorage.setItem(cacheKey, JSON.stringify(releases)); localStorage.setItem(cacheTsKey, now.toString()); }
         }
-        const releases = await res.json();
-        latestRelease = releases[0];
-        setupHero(latestRelease);
-        showReleaseCards(releases);
-        document.getElementById('latest-btn').onclick = () => window.location.href = `https://github.com/${repo}/archive/refs/heads/latest.zip`;
-        document.getElementById('hero-download-btn').onclick = openAssetModal;
-        checkLatest(releases);
       } catch (e) {
-        console.error('Errore fetch releases:', e);
-        showRateLimitError();
+        console.error('Errore fetch/cache releases:', e);
+        const cached=localStorage.getItem(cacheKey);
+        if (cached) releases=JSON.parse(cached);
+        else { showRateLimitError(); return; }
       }
+      latestRelease=releases[0]; setupHero(latestRelease); showReleaseCards(releases);
+      document.getElementById('latest-btn').onclick=()=>window.location.href=`https://github.com/${repo}/archive/refs/heads/latest.zip`;
+      document.getElementById('hero-download-btn').onclick=openAssetModal;
+      checkLatest(releases);
     }
-
-    function showRateLimitError() {
-      const container = document.querySelector('.container');
-      const errorCard = document.createElement('div');
-      errorCard.className = 'alert alert-warning';
-      errorCard.textContent = 'GitHub API rate limit raggiunto. Riprova tra qualche minuto o configura un token.';
-      container.insertBefore(errorCard, container.firstChild);
-    }
-
     init();
   </script>
 </body>
