@@ -166,89 +166,31 @@
 
     async function init() {
       initTheme();
-      const releases = await fetch(`${apiRoot}/releases`).then(r => r.json());
-      latestRelease = releases[0];
-      setupHero(latestRelease);
-      showReleaseCards(releases);
-      document.getElementById('latest-btn').onclick = () => window.location.href = `https://github.com/${repo}/archive/refs/heads/latest.zip`;
-      document.getElementById('hero-download-btn').onclick = openAssetModal;
-      checkLatest(releases);
-    }
-
-    function setupHero(rel) {
-      document.getElementById('hero-version').textContent = rel.tag_name;
-      document.getElementById('hero-date').textContent = new Date(rel.published_at).toLocaleDateString('it-IT', { day:'2-digit', month:'2-digit', year:'numeric' });
-    }
-
-    function openAssetModal() {
-      const modalBody = document.getElementById('modal-buttons');
-      modalBody.innerHTML = '';
-      latestRelease.assets.forEach(asset => {
-        let label='', cls='btn-secondary';
-        const name = asset.name.toLowerCase();
-        if (name === 'server.zip') { label = 'Server'; cls = 'btn-primary'; }
-        else if (name === 'client.zip') { label = 'Client Legacy'; cls = 'btn-warning text-dark'; }
-        else if (name.endsWith('.mrpack')) { label = 'Modrinth'; cls = 'btn-success'; }
-        else if (name === 'update.exe') { label = 'Installer'; cls = 'btn-purple'; }
-        if (label) {
-          const btn = document.createElement('a');
-          btn.className = `btn ${cls} w-100 mb-2`;
-          btn.href = asset.browser_download_url;
-          btn.textContent = `Scarica ${label}`;
-          btn.addEventListener('click', () => bootstrap.Modal.getInstance(document.getElementById('assetModal')).hide());
-          modalBody.appendChild(btn);
-        }
-      });
-      new bootstrap.Modal(document.getElementById('assetModal')).show();
-    }
-
-    function showReleaseCards(releases) {
-      const row = document.getElementById('releases-row');
-      row.innerHTML = '';
-      releases.forEach((rel, i) => {
-        const col = document.createElement('div');
-        col.className = 'col-12 col-md-6 col-lg-4';
-        const card = document.createElement('div'); card.className = 'card h-100';
-        card.style.animationDelay = `${(i + 1) * 100}ms`;
-        const body = document.createElement('div'); body.className = 'card-body d-flex flex-column';
-        const title = document.createElement('h6'); title.className = 'card-title'; title.textContent = rel.name || rel.tag_name; body.appendChild(title);
-
-        if (rel.published_at) {
-          const date = document.createElement('p'); date.className = 'card-text text-muted mb-3';
-          date.textContent = new Date(rel.published_at).toLocaleDateString('it-IT', { day:'2-digit', month:'2-digit', year:'numeric' });
-          body.appendChild(date);
-        }
-
-        const btnContainer = document.createElement('div'); btnContainer.className = 'mt-auto d-flex flex-wrap gap-2';
-        rel.assets.forEach(asset => {
-          let label='', btnClass='btn-secondary';
-          const nm = asset.name.toLowerCase();
-          if (nm === 'server.zip') { label = 'Download Server'; btnClass = 'btn-primary'; }
-          else if (nm === 'client.zip') { label = 'Download Client Legacy'; btnClass = 'btn-warning text-dark'; }
-          else if (nm.endsWith('.mrpack')) { label = 'Download Modrinth'; btnClass = 'btn-success'; }
-          else if (nm === 'update.exe') { label = 'Download Installer'; btnClass = 'btn-purple'; }
-          if (label) {
-            const a = document.createElement('a'); a.className = `btn ${btnClass} btn-sm`; a.href = asset.browser_download_url; a.textContent = label;
-            btnContainer.appendChild(a);
-          }
-        });
-        body.appendChild(btnContainer); card.appendChild(body); col.appendChild(card); row.appendChild(col);
-      });
-    }
-
-    async function checkLatest(releases) {
       try {
-        const latestRelease = releases[0];
-        const compareRes = await fetch(`${apiRoot}/compare/${encodeURIComponent(latestRelease.tag_name)}...latest`).then(r => r.json());
-        const badge = document.getElementById('latest-status');
-        if (compareRes.status === 'identical' || compareRes.status === 'behind') {
-          badge.className = 'badge bg-success'; badge.textContent = 'Up-to-date';
-          const firstCard = document.querySelector('#releases-row .card'); if (firstCard) firstCard.classList.add('border', 'border-success', 'border-2');
-        } else {
-          badge.className = 'badge bg-secondary'; badge.textContent = 'Latest';
-          const firstCard = document.querySelector('#releases-row .card.border-success'); if (firstCard) firstCard.classList.remove('border', 'border-success', 'border-2');
+        const res = await fetch(`${apiRoot}/releases`);
+        if (res.status === 403) {
+          showRateLimitError();
+          return;
         }
-      } catch (e) { console.error('Errore nel checkLatest:', e); }
+        const releases = await res.json();
+        latestRelease = releases[0];
+        setupHero(latestRelease);
+        showReleaseCards(releases);
+        document.getElementById('latest-btn').onclick = () => window.location.href = `https://github.com/${repo}/archive/refs/heads/latest.zip`;
+        document.getElementById('hero-download-btn').onclick = openAssetModal;
+        checkLatest(releases);
+      } catch (e) {
+        console.error('Errore fetch releases:', e);
+        showRateLimitError();
+      }
+    }
+
+    function showRateLimitError() {
+      const container = document.querySelector('.container');
+      const errorCard = document.createElement('div');
+      errorCard.className = 'alert alert-warning';
+      errorCard.textContent = 'GitHub API rate limit raggiunto. Riprova tra qualche minuto o configura un token.';
+      container.insertBefore(errorCard, container.firstChild);
     }
 
     init();
