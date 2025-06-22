@@ -1,0 +1,22 @@
+:root { --bg-light:#f8f9fa; --bg-dark:#181818; --card-light:#ffffff; --card-dark:#242424; --text-light:#212529; --text-dark:#f1f1f1; --muted-light:#6c757d; --muted-dark:#bbb; --accent:#0d6efd; }
+body { background:var(--bg-light); color:var(--text-light); transition:0.3s; overflow-x:hidden; }
+.card { background:var(--card-light); color:var(--text-light); box-shadow:0 4px 6px rgba(0,0,0,0.1); border-radius:.75rem; opacity:0; transform:translateY(20px); animation:fadeUp 0.6s forwards; transition:transform .3s; }
+.card:hover { transform:scale(1.03); box-shadow:0 8px 16px rgba(0,0,0,0.2); }
+.btn { transition:transform .1s ease; }
+.btn:active { transform:scale(0.97); }
+h1 { font-weight:300; }
+@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+.btn-accent { background:var(--accent); color:#fff; font-weight:bold; padding:.75rem 1.5rem; border-radius:2rem; box-shadow:0 4px 10px rgba(13,110,253,0.4); animation:pulse 2s infinite; transition:background .3s,transform .3s; }
+.btn-accent:hover { background:#0b5ed7; transform:scale(1.05); }
+@keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(13,110,253,0.7);}70%{box-shadow:0 0 0 10px rgba(13,110,253,0);}100%{box-shadow:0 0 0 0 rgba(13,110,253,0);} }
+.btn-purple { background:#6f42c1; color:#fff; transition:transform .1s; }
+.btn-purple:hover { background:#5936a1; transform:scale(1.02); }
+.dark-mode body { background:var(--bg-dark); color:var(--text-dark); }
+.dark-mode .card { background:var(--card-dark); color:var(--text-dark); box-shadow:0 4px 6px rgba(255,255,255,0.1); }
+.dark-mode .text-muted { color:var(--muted-dark) !important; }
+.dark-mode .modal-content, .dark-mode .modal-header, .dark-mode .modal-body, .dark-mode .modal-footer { background:var(--card-dark); color:var(--text-dark); }
+.dark-mode .btn-close { filter:invert(1); }
+#dark-alert { position:fixed; bottom:1rem; right:1rem; z-index:1050; display:flex; align-items:center; background:rgba(255,255,255,0.9); color:var(--text-light); padding:.75rem 1rem; border-radius:.5rem; box-shadow:0 2px 6px rgba(0,0,0,0.15); opacity:0; transition:opacity .5s; }
+.dark-mode #dark-alert { background:rgba(32,32,32,0.9); color:var(--text-dark); }
+#dark-alert.show { opacity:1; }
+#dark-alert button.close-alert { background:transparent; border:none; font-size:1.2rem; margin-left:.5rem; cursor:pointer; color:inherit; }
