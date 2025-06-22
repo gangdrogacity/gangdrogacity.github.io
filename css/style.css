@@ -1,4 +1,23 @@
-:root { --bg-light:#f8f9fa; --bg-dark:#181818; --card-light:#ffffff; --card-dark:#242424; --text-light:#212529; --text-dark:#f1f1f1; --muted-light:#6c757d; --muted-dark:#bbb; --accent:#0d6efd; }
+:root { 
+  --bg-light:#f8f9fa; 
+  --bg-dark:#181818; 
+  --card-light:#ffffff; 
+  --card-dark:#242424; 
+  --text-light:#212529; 
+  --text-dark:#f1f1f1; 
+  --muted-light:#6c757d; 
+  --muted-dark:#bbb; 
+  --accent:#0d6efd;
+  --alert-info-dark-bg: rgba(13, 202, 240, 0.15);
+  --alert-info-dark-border: rgba(13, 202, 240, 0.4);
+  --alert-info-dark-text: #e6f9fc;
+  --alert-warning-dark-bg: rgba(255, 193, 7, 0.15);
+  --alert-warning-dark-border: rgba(255, 193, 7, 0.4);
+  --alert-warning-dark-text: #fff8e5;
+  --alert-primary-dark-bg: rgba(13, 110, 253, 0.15);
+  --alert-primary-dark-border: rgba(13, 110, 253, 0.4);
+  --alert-primary-dark-text: #e6f0ff;
+}
 body { background:var(--bg-light); color:var(--text-light); transition:0.3s; overflow-x:hidden; }
 .card { background:var(--card-light); color:var(--text-light); box-shadow:0 4px 6px rgba(0,0,0,0.1); border-radius:.75rem; opacity:0; transform:translateY(20px); animation:fadeUp 0.6s forwards; transition:transform .3s; }
 .card:hover { transform:scale(1.03); box-shadow:0 8px 16px rgba(0,0,0,0.2); }
@@ -99,20 +118,91 @@ h1 { font-weight:300; }
   color: #f8f9fa;
 }
 
-.dark-mode #faqGeneral .alert-info {
-  background-color: rgba(13, 202, 240, 0.15);
-  border-color: rgba(13, 202, 240, 0.4);
-  color: #e7f5ff;
+/* Miglioramento della visibilità per dark mode */
+.dark-mode .alert-info {
+  background-color: var(--alert-info-dark-bg);
+  border-color: var(--alert-info-dark-border);
+  color: var(--alert-info-dark-text);
 }
 
-.dark-mode #faqGeneral .alert-warning {
-  background-color: rgba(255, 193, 7, 0.15);
-  border-color: rgba(255, 193, 7, 0.4);
-  color: #fff8e5;
+.dark-mode .alert-warning {
+  background-color: var(--alert-warning-dark-bg);
+  border-color: var(--alert-warning-dark-border);
+  color: var(--alert-warning-dark-text);
 }
 
-.dark-mode #faqGeneral .alert-primary {
-  background-color: rgba(13, 110, 253, 0.15);
-  border-color: rgba(13, 110, 253, 0.4);
-  color: #e6f2ff;
+.dark-mode .alert-primary {
+  background-color: var(--alert-primary-dark-bg);
+  border-color: var(--alert-primary-dark-border);
+  color: var(--alert-primary-dark-text);
+}
+
+/* Rendi il testo dei sottotitoli più visibile in dark mode */
+.dark-mode h6,
+.dark-mode .card-title,
+.dark-mode strong {
+  color: #fff;
+}
+
+/* Migliora la visibilità di tutti i testi in dark mode */
+.dark-mode .card-body {
+  color: #e1e1e1;
+}
+
+/* Migliora la visibilità dei link in dark mode */
+.dark-mode a {
+  color: #6ea8fe;
+}
+
+.dark-mode a:hover {
+  color: #9ec5fe;
+}
+
+/* Migliora la visibilità degli elementi kbd in dark mode */
+.dark-mode kbd {
+  background-color: #333;
+  color: #fff;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25);
+}
+
+/* Migliora gli stili delle card in dark mode */
+.dark-mode #faqInstallation .card.bg-light {
+  background-color: var(--card-dark) !important;
+}
+
+/* Assicura che il testo dentro card-body sia visibile in dark mode */
+.dark-mode .card .card-body {
+  color: var(--text-dark);
+}
+
+/* Migliora la visibilità degli alert in generale */
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border-width: 1px;
+}
+
+/* Migliora il contrasto per tutti i tipi di alert in dark mode */
+.dark-mode .alert {
+  border-width: 1px;
+  border-style: solid;
+}
+
+/* Migliora la visibilità del testo all'interno degli alert in dark mode */
+.dark-mode .alert strong,
+.dark-mode .alert small {
+  color: inherit;
+}
+
+/* Assicura che il testo delle note sia ben visibile nelle card annidate */
+.dark-mode .card .card {
+  background-color: #2c2c2c !important;
+}
+
+/* Assicura che le note e i suggerimenti abbiano contrasto sufficiente */
+.dark-mode .alert-info small,
+.dark-mode .alert-warning small,
+.dark-mode .alert-primary small {
+  color: inherit;
+  opacity: 0.9;
 }
