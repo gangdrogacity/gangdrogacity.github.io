@@ -179,4 +179,9 @@ async function init(){
 
 document.addEventListener('DOMContentLoaded', function() {
   init();
+
+  // Gestisco il pulsante di chiusura dell'avviso dark mode
+  document.querySelector('#dark-alert .close-alert').addEventListener('click', function() {
+    hideDarkAlert();
+  });
 });
