@@ -4,6 +4,102 @@ const themeBtn=document.getElementById('theme-toggle');
 const darkAlert=document.getElementById('dark-alert');
 let latestRelease;
 
+// Controllo del dominio ufficiale
+function checkDomain() {
+  const officialDomain = 'gangdrogacity.xyz';
+  const currentDomain = window.location.hostname;
+  
+  if (currentDomain !== officialDomain) {
+    showDomainWarning();
+    return false;
+  }
+  return true;
+}
+
+function showDomainWarning() {
+  // Crea overlay per l'avviso
+  const overlay = document.createElement('div');
+  overlay.id = 'domain-warning-overlay';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+  `;
+  
+  // Crea contenuto dell'avviso
+  const warningBox = document.createElement('div');
+  warningBox.style.cssText = `
+    background: var(--bs-body-bg, white);
+    color: var(--bs-body-color, black);
+    border-radius: 15px;
+    padding: 2rem;
+    max-width: 500px;
+    margin: 1rem;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border: 2px solid var(--accent-color, #007bff);
+  `;
+  
+  warningBox.innerHTML = `
+    <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+    <h3 style="color: var(--accent-color, #007bff); margin-bottom: 1rem;">Dominio Cambiato!</h3>
+    <p style="margin-bottom: 1.5rem; line-height: 1.5;">
+      Il dominio ufficiale del GDC Modpack è cambiato.<br>
+      Per garantirti sempre l'ultima versione e la massima sicurezza, 
+      ti invitiamo a utilizzare il nuovo dominio ufficiale.
+    </p>
+    <p style="margin-bottom: 2rem; font-weight: bold; color: var(--accent-color, #007bff);">
+      Nuovo dominio: <code style="background: var(--bs-gray-100, #f8f9fa); padding: 0.25rem 0.5rem; border-radius: 4px;">https://gangdrogacity.xyz/</code>
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="https://gangdrogacity.xyz/" 
+         style="background: var(--accent-color, #007bff); color: white; padding: 0.75rem 1.5rem; 
+                border-radius: 8px; text-decoration: none; font-weight: bold; 
+                transition: all 0.3s ease; display: inline-block;">
+        Vai al Sito Ufficiale
+      </a>
+      <button id="continue-anyway" 
+              style="background: transparent; color: var(--bs-body-color, black); 
+                     padding: 0.75rem 1.5rem; border: 2px solid var(--bs-border-color, #dee2e6); 
+                     border-radius: 8px; cursor: pointer; font-weight: bold;
+                     transition: all 0.3s ease;">
+        Continua Comunque
+      </button>
+    </div>
+    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--bs-text-muted, #6c757d);">
+      Aggiorna i tuoi segnalibri per non perdere gli aggiornamenti!
+    </p>
+  `;
+  
+  // Aggiungi eventi hover per i pulsanti
+  const continueBtn = warningBox.querySelector('#continue-anyway');
+  continueBtn.addEventListener('mouseover', function() {
+    this.style.backgroundColor = 'var(--bs-gray-100, #f8f9fa)';
+  });
+  continueBtn.addEventListener('mouseout', function() {
+    this.style.backgroundColor = 'transparent';
+  });
+  
+  // Evento per continuare comunque
+  continueBtn.addEventListener('click', function() {
+    overlay.remove();
+  });
+  
+  overlay.appendChild(warningBox);
+  document.body.appendChild(overlay);
+  
+  // Nascondi il contenuto principale
+  document.querySelector('.container').style.display = 'none';
+}
+
 function showRateLimitError(){
   const c=document.querySelector('.container');
   const a=document.createElement('div');
@@ -178,6 +274,11 @@ async function init(){
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Controlla prima il dominio
+  if (!checkDomain()) {
+    return; // Se il dominio non è quello ufficiale, mostra l'avviso e ferma l'inizializzazione
+  }
+  
   init();
 
   // Gestisco il pulsante di chiusura dell'avviso dark mode
