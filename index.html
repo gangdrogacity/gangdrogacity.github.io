@@ -3,49 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Gang Droga City - Server Minecraft ufficiale. Scarica il launcher e unisciti all'avventura!">
   <title>Gang Droga City - Server Minecraft</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background: url('https://images.unsplash.com/photo-1556438064-2d7646166914?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-      text-align: center;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .overlay {
-      background: rgba(0, 0, 0, 0.5);
-      padding: 20px;
-      border-radius: 10px;
-    }
-    h1 {
-      font-size: 3em;
-      margin-bottom: 20px;
-    }
-    .download-btn {
-      background: #4CAF50;
-      color: white;
-      padding: 15px 30px;
-      text-decoration: none;
-      font-size: 1.2em;
-      border-radius: 5px;
-      transition: background 0.3s;
-    }
-    .download-btn:hover {
-      background: #45a049;
-    }
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="overlay">
-    <h1>Benvenuto su Gang Droga City</h1>
-    <p>Server Minecraft - Scarica il Launcher per iniziare l'avventura!</p>
-    <a href="https://github.com/gangdrogacity/launcher/releases/download/v2.1.2/GangDrogaCity.exe" class="download-btn">Scarica Launcher</a>
-  </div>
+  <!-- Hero Section -->
+  <main class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <img src="logo.png" alt="GangDrogaCity" class="hero-logo">
+		<p class="hero-subtitle">Vivi un'esperienza RP unica nel suo genere. <br>La prima città moddata italiana dove creare la tua storia insieme ai tuoi amici!</p>
+        
+        <div class="download-section">
+          <a href="https://github.com/gangdrogacity/launcher/releases/download/v2.1.2/GangDrogaCity.exe" 
+             class="btn btn-primary">
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+			  <path d="M0,0 L10.5,0 L10.5,10.5 L0,10.5 Z M11.5,0 L24,0 L24,10.5 L11.5,10.5 Z M0,11.5 L10.5,11.5 L10.5,24 L0,24 Z M11.5,11.5 L24,11.5 L24,24 L11.5,24 Z"/>
+			</svg>
+            Download
+          </a>
+          
+          <div class="version-info">
+            <span class="platform">Windows 10 e successivi</span>
+          </div>
+        </div>
+
+        <p class="disclaimer-main">NON È UN PRODOTTO UFFICIALE DI MINECRAFT. NON APPROVATO DA O ASSOCIATO A MOJANG O MICROSOFT<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 GangDrogaCity. Tutti i diritti riservati.</p>
+    <div class="footer-links">
+      <a href="https://github.com/gangdrogacity" target="_blank" rel="noopener">GitHub</a>
+      <span class="divider">•</span>
+      <a href="https://discord.gg/yejj2Gby32" target="_blank" rel="noopener">Discord</a>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
 </body>
 </html>
