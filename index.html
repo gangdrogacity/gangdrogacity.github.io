@@ -3,348 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GDC Modpack Download</title>
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Custom CSS -->
-  <link href="css/style.css" rel="stylesheet">
+  <title>Gang Droga City - Server Minecraft</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: url('https://images.unsplash.com/photo-1556438064-2d7646166914?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      text-align: center;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .overlay {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      border-radius: 10px;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+    .download-btn {
+      background: #4CAF50;
+      color: white;
+      padding: 15px 30px;
+      text-decoration: none;
+      font-size: 1.2em;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    .download-btn:hover {
+      background: #45a049;
+    }
+  </style>
 </head>
 <body>
-  <div id="dark-alert">Ti fanno male gli occhi? Perché non attivi la dark mode!<button class="close-alert" aria-label="Chiudi">×</button></div>
-  <div class="container py-5">
-    <div class="d-flex justify-content-end mb-3"><button id="theme-toggle" class="btn btn-sm btn-outline-secondary">Dark Mode</button></div>
-    <h1 class="text-center mb-5">GDC Modpack Download Center</h1>
-
-    <div id="hero-card" class="card mb-4 text-center p-4" style="animation-delay:0ms;">
-      <h2 class="mb-3">Scarica subito l'ultima release</h2>
-      <p class="mb-4 text-muted">Versione <span id="hero-version">...</span> pubblicata il <span id="hero-date">...</span></p>
-      <button id="hero-download-btn" class="btn btn-lg btn-accent">Scarica Ora</button>
-    </div>
-    <div class="card mb-4" style="animation-delay:500ms;"><div class="card-body">
-        <h5 class="card-title mb-3">Tutorial di Installazione</h5>
-        <div class="accordion" id="faqInstallation">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="faqInstall1-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                      data-bs-target="#faqInstall1" aria-expanded="false" aria-controls="faqInstall1">
-                Hai Minecraft Premium?
-              </button>
-            </h2>
-            <div id="faqInstall1" class="accordion-collapse collapse" aria-labelledby="faqInstall1-header" data-bs-parent="#faqInstallation">
-              <div class="accordion-body">
-                <div class="row">
-                  <div class="col-md-6">
-                    <div class="card h-100 bg-light">
-                      <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">Sì, ho Minecraft Premium</h5>
-                      </div>
-                      <div class="card-body">
-                        <h6 class="card-title">Tutorial per Modrinth</h6>
-                        <ol class="mt-3">
-                          <li>Scarica il file <strong>.mrpack</strong> dalla sezione Releases</li>
-                          <li>Installa <a href="https://prismlauncher.org/download/" target="_blank">Prism Launcher</a> o <a href="https://modrinth.com/app" target="_blank">Modrinth App</a></li>
-                          <li>Aggiungi il tuo account Minecraft al launcher</li>
-                          <li>Importa il file .mrpack scaricato:
-                            <ul>
-                              <li><strong>Prism Launcher</strong>: Clicca "Aggiungi Istanza" → "Importa" → Seleziona il file .mrpack</li>
-                              <li><strong>Modrinth App</strong>: Clicca "+" → "Importa" → Seleziona il file .mrpack</li>
-                            </ul>
-                          </li>
-                          <li>Attendi il completamento dell'installazione</li>
-                          <li>Avvia il gioco!</li>
-                        </ol>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="card h-100 bg-light">
-                      <div class="card-header bg-warning text-dark">
-                        <h5 class="mb-0">No, non ho Minecraft Premium</h5>
-                      </div>
-                      <div class="card-body">
-                        <h6 class="card-title">Tutorial per Client Legacy</h6>
-                        <ol class="mt-3">
-                          <li>Scarica il file <strong>Client Legacy</strong> (pulsante giallo nelle Releases)</li>
-                          <li>Installa Forge 1.20.1-47.3.33:
-                            <ul>
-                              <li>Scarica l'<a href="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.3.33/forge-1.20.1-47.3.33-installer.jar" target="_blank">installer di Forge</a></li>
-                              <li>Fai doppio clic e seleziona "Install client"</li>
-                            </ul>
-                          </li>
-                          <li>Estrai lo ZIP scaricato nella cartella <code>.minecraft</code>:
-                            <ul>
-                              <li>Su Windows: premi <kbd>Win+R</kbd>, scrivi <code>%appdata%\.minecraft</code> e premi Invio</li>
-                              <li>Su Mac/Linux: apri la cartella nascosta <code>.minecraft</code></li>
-                            </ul>
-                          </li>
-                          <li>Avvia Minecraft e seleziona il profilo "forge-1.20.1-47.3.33"</li>
-                        </ol>
-                        <div class="alert alert-info mt-2 mb-0 py-2">
-                          <small><strong>Suggerimento:</strong> Per aprire uno ZIP basta fare doppio clic e trascinare tutti i file nella cartella di destinazione.</small>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-    </div></div>
-    <div class="card mb-4" style="animation-delay:100ms;"><div class="card-body">
-        <h5 class="card-title">Requisiti</h5>
-        <ul class="mb-0">
-          <li>Java 17 o superiore installato</li>
-          <li>Forge 1.20.1-47.3.33: <a href="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.3.33/forge-1.20.1-47.3.33-installer.jar" target="_blank">Scarica l'installer</a></li>
-        </ul>
-    </div></div>
-
-    <div class="card mb-4" style="animation-delay:200ms;"><div class="card-body">
-        <h5 class="card-title mb-4">Releases</h5><div id="releases-row" class="row g-4"></div>
-    </div></div>
-
-    <div id="latest-card" class="card mb-4" style="animation-delay:300ms;"><div class="card-body d-flex align-items-center justify-content-between">
-        <h5 class="card-title mb-0">Scarica latest (solo se sai cosa stai facendo)</h5>
-        <div><button id="latest-btn" class="btn btn-primary me-2">Scarica ZIP</button><span id="latest-status" class="badge bg-secondary">Latest</span></div>
-    </div></div>
-
-    <div class="card mb-4" style="animation-delay:400ms;"><div class="card-body">
-        <h5 class="card-title mb-3">FAQ - Domande Frequenti</h5>
-        <div class="accordion" id="faqGeneral">
-          <!-- Sezione Forge -->
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="faqHeading1">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                      data-bs-target="#faqCollapse1" aria-expanded="false" aria-controls="faqCollapse1">
-                Come installo Forge?
-              </button>
-            </h2>
-            <div id="faqCollapse1" class="accordion-collapse collapse" aria-labelledby="faqHeading1" data-bs-parent="#faqGeneral">
-              <div class="accordion-body">
-                <p>Forge è il modloader necessario per eseguire il nostro modpack. Ecco i passaggi per installarlo:</p>
-                <ol>
-                  <li>Scarica l'installer di Forge 1.20.1-47.3.33 da <a href="https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.3.33/forge-1.20.1-47.3.33-installer.jar" target="_blank">questo link ufficiale</a></li>
-                  <li>Assicurati di avere Java 17 installato (vedi FAQ su Java)</li>
-                  <li>Esegui l'installer con un doppio clic o usando il comando <code>java -jar forge-1.20.1-47.3.33-installer.jar</code></li>
-                  <li>Seleziona "Install client" e conferma</li>
-                  <li>Attendi il completamento dell'installazione</li>
-                </ol>
-                <div class="alert alert-info">
-                  <strong>Nota:</strong> Forge creerà un nuovo profilo nel launcher di Minecraft chiamato "forge-1.20.1-47.3.33"
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Sezione Java -->
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="faqHeading2">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                      data-bs-target="#faqCollapse2" aria-expanded="false" aria-controls="faqCollapse2">
-                Come installo Java 17?
-              </button>
-            </h2>
-            <div id="faqCollapse2" class="accordion-collapse collapse" aria-labelledby="faqHeading2" data-bs-parent="#faqGeneral">
-              <div class="accordion-body">
-                <p>Minecraft 1.20.1 e Forge richiedono Java 17 o superiore. Ecco come installarlo:</p>
-                <h6>Windows:</h6>
-                <ol>
-                  <li>Scarica il JDK da <a href="https://adoptium.net/temurin/releases/?version=17" target="_blank">Adoptium (Eclipse Temurin)</a></li>
-                  <li>Seleziona la versione Windows .msi per il tuo sistema (x64 per la maggior parte dei PC moderni)</li>
-                  <li>Esegui l'installer e segui le istruzioni</li>
-                </ol>
-                <h6>macOS:</h6>
-                <ol>
-                  <li>Scarica il JDK da <a href="https://adoptium.net/temurin/releases/?version=17" target="_blank">Adoptium</a></li>
-                  <li>Seleziona la versione macOS .pkg</li>
-                  <li>Esegui l'installer e segui le istruzioni</li>
-                </ol>
-                <h6>Linux:</h6>
-                <ol>
-                  <li>Usa il gestore pacchetti della tua distribuzione (ad esempio: <code>sudo apt install openjdk-17-jdk</code> per Ubuntu/Debian)</li>
-                  <li>In alternativa, scarica la versione Linux da <a href="https://adoptium.net/temurin/releases/?version=17" target="_blank">Adoptium</a></li>
-                </ol>
-                <div class="alert alert-warning">
-                  <strong>Verifica l'installazione:</strong> Dopo l'installazione, apri un terminale o prompt dei comandi e digita <code>java -version</code>. Dovresti vedere una versione 17.x.x.
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Sezione Modpack -->
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="faqHeading3">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                      data-bs-target="#faqCollapse3" aria-expanded="false" aria-controls="faqCollapse3">
-                Cos'è un modpack e come funziona?
-              </button>
-            </h2>
-            <div id="faqCollapse3" class="accordion-collapse collapse" aria-labelledby="faqHeading3" data-bs-parent="#faqGeneral">
-              <div class="accordion-body">
-                <p>Un modpack è una collezione curata di mod (modifiche) per Minecraft, configurate per funzionare insieme senza conflitti.</p>
-                <h6>Caratteristiche del nostro modpack:</h6>
-                <ul>
-                  <li>Raccolta di mod selezionate per migliorare l'esperienza di gioco</li>
-                  <li>Configurazioni ottimizzate per prestazioni e stabilità</li>
-                  <li>Compatibilità testata tra tutte le mod incluse</li>
-                  <li>Aggiornamenti regolari per supportare nuove mod e correzioni</li>
-                </ul>
-                <p>Il GDC Modpack include mod per:</p>
-                <ul>
-                  <li>Miglioramenti grafici e di performance</li>
-                  <li>Nuovi contenuti e meccaniche di gioco</li>
-                  <li>Miglioramenti dell'interfaccia utente</li>
-                  <li>Ottimizzazioni tecniche</li>
-                </ul>
-                <div class="alert alert-info">
-                  <strong>Nota:</strong> Utilizziamo diversi formati di distribuzione (.mrpack per Modrinth e Client Legacy per installazione manuale) per adattarci alle diverse esigenze degli utenti.
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Sezione Problemi Comuni -->
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="faqHeading4">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                      data-bs-target="#faqCollapse4" aria-expanded="false" aria-controls="faqCollapse4">
-                Problemi comuni e soluzioni
-              </button>
-            </h2>
-            <div id="faqCollapse4" class="accordion-collapse collapse" aria-labelledby="faqHeading4" data-bs-parent="#faqGeneral">
-              <div class="accordion-body">
-                <h6>Il gioco crasha all'avvio:</h6>
-                <ul>
-                  <li><strong>Memoria insufficiente:</strong> Aumenta la RAM allocata a Minecraft (consigliato almeno 4GB)
-                    <ul>
-                      <li>In Minecraft Launcher: Modifica il profilo Forge → Altre opzioni → Argomenti JVM → Cerca <code>-Xmx2G</code> e cambia in <code>-Xmx4G</code> (per 4GB)</li>
-                      <li>In Prism Launcher/Modrinth App: Modifica istanza → Impostazioni → Memoria</li>
-                    </ul>
-                  </li>
-                  <li><strong>Java sbagliato:</strong> Assicurati di usare Java 17</li>
-                  <li><strong>Versione di Forge errata:</strong> Usa esattamente la versione 1.20.1-47.3.33</li>
-                  <li><strong>Mod incompatibili:</strong> Se hai aggiunto altre mod, prova a rimuoverle</li>
-                </ul>
-                
-                <h6>Problemi grafici:</h6>
-                <ul>
-                  <li><strong>Schermate nere:</strong> Prova a disabilitare le shader nella cartella options</li>
-                  <li><strong>FPS bassi:</strong> Riduci la distanza di rendering o disabilita alcune opzioni grafiche</li>
-                  <li><strong>Glitch visivi:</strong> Aggiorna i driver della tua scheda grafica</li>
-                </ul>
-                
-                <h6>Multiplayer:</h6>
-                <ul>
-                  <li><strong>Non riesco a connettermi:</strong> Assicurati che client e server usino esattamente le stesse mod e versioni</li>
-                  <li><strong>Latenza elevata:</strong> Verifica la tua connessione internet e prova a chiudere altre applicazioni che utilizzano la rete</li>
-                </ul>
-                
-                <div class="alert alert-primary">
-                  <strong>Serve aiuto?</strong> Puoi chiedere supporto sul nostro <a href="#" target="_blank">Discord</a> o aprire una issue su <a href="https://github.com/jamnaga/wtf-modpack/issues" target="_blank">GitHub</a>.
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Sezione Requisiti -->
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="faqHeading5">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                      data-bs-target="#faqCollapse5" aria-expanded="false" aria-controls="faqCollapse5">
-                Requisiti di sistema consigliati
-              </button>
-            </h2>
-            <div id="faqCollapse5" class="accordion-collapse collapse" aria-labelledby="faqHeading5" data-bs-parent="#faqGeneral">
-              <div class="accordion-body">
-                <p>Per un'esperienza di gioco ottimale con il GDC Modpack, consigliamo:</p>
-                
-                <h6>Requisiti minimi:</h6>
-                <ul>
-                  <li><strong>CPU:</strong> Intel Core i5 di 7ª generazione o AMD Ryzen 3 (o equivalente)</li>
-                  <li><strong>RAM:</strong> 8GB (con almeno 4GB allocati a Minecraft)</li>
-                  <li><strong>GPU:</strong> NVIDIA GeForce GTX 960 o AMD Radeon RX 560 o Intel Iris Xe</li>
-                  <li><strong>Spazio su disco:</strong> 2GB liberi</li>
-                  <li><strong>Sistema operativo:</strong> Windows 10/11, macOS 10.15+, o Linux con ambiente grafico</li>
-                  <li><strong>Java:</strong> Java 17 o superiore</li>
-                </ul>
-                
-                <h6>Configurazione consigliata:</h6>
-                <ul>
-                  <li><strong>CPU:</strong> Intel Core i7 di 10ª generazione o AMD Ryzen 5 5000 series</li>
-                  <li><strong>RAM:</strong> 16GB (con 6-8GB allocati a Minecraft)</li>
-                  <li><strong>GPU:</strong> NVIDIA GeForce GTX 1660 o AMD Radeon RX 5600 XT o superiore</li>
-                  <li><strong>Spazio su disco:</strong> SSD con 5GB liberi</li>
-                  <li><strong>Connessione Internet:</strong> Stabile per gli aggiornamenti e il multiplayer</li>
-                </ul>
-                
-                <div class="alert alert-info">
-                  <strong>Nota sulla memoria:</strong> Allocare troppa RAM può causare problemi di performance a causa della garbage collection di Java. Se noti "stuttering" periodico, prova a ridurre la RAM allocata.
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Sezione Differenze versioni -->
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="faqHeading6">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                      data-bs-target="#faqCollapse6" aria-expanded="false" aria-controls="faqCollapse6">
-                Differenze tra le versioni disponibili
-              </button>
-            </h2>
-            <div id="faqCollapse6" class="accordion-collapse collapse" aria-labelledby="faqHeading6" data-bs-parent="#faqGeneral">
-              <div class="accordion-body">
-                <p>Offriamo diverse versioni del modpack per soddisfare le esigenze di tutti i giocatori:</p>
-                
-                <h6>Versione Modrinth (.mrpack):</h6>
-                <ul>
-                  <li><strong>Per chi:</strong> Utenti con account Minecraft premium</li>
-                  <li><strong>Vantaggi:</strong> Installazione facile, aggiornamenti automatici, gestione semplificata</li>
-                  <li><strong>Launcher:</strong> Prism Launcher, Modrinth App</li>
-                </ul>
-                
-                <h6>Client Legacy (ZIP):</h6>
-                <ul>
-                  <li><strong>Per chi:</strong> Utenti senza account premium o che preferiscono l'installazione manuale</li>
-                  <li><strong>Vantaggi:</strong> Compatibilità con launcher non ufficiali, controllo totale sull'installazione</li>
-                  <li><strong>Launcher:</strong> Minecraft Launcher standard o altri launcher</li>
-                </ul>
-                
-                <h6>Server (ZIP):</h6>
-                <ul>
-                  <li><strong>Per chi:</strong> Chi vuole ospitare un server dedicato con il modpack</li>
-                  <li><strong>Contenuto:</strong> File server ottimizzati, script di avvio, configurazioni server-side</li>
-                </ul>
-                
-                <h6>Installer (EXE):</h6>
-                <ul>
-                  <li><strong>Per chi:</strong> Utenti Windows che preferiscono un'installazione guidata</li>
-                  <li><strong>Vantaggi:</strong> Installazione automatizzata con controllo di prerequisiti</li>
-                </ul>
-                
-                <div class="alert alert-warning">
-                  <strong>Attenzione:</strong> Tutte le versioni contengono le stesse mod, ma possono differire nel metodo di installazione e aggiornamento.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-    </div></div>
-
-    
-
+  <div class="overlay">
+    <h1>Benvenuto su Gang Droga City</h1>
+    <p>Server Minecraft - Scarica il Launcher per iniziare l'avventura!</p>
+    <a href="https://github.com/gangdrogacity/launcher/releases/download/v2.1.2/GangDrogaCity.exe" class="download-btn">Scarica Launcher</a>
   </div>
-
-  <!-- Modal -->
-  <div class="modal fade" id="assetModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
-    <div class="modal-header"><h5 class="modal-title">Scegli cosa scaricare</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-    <div id="modal-buttons" class="modal-body d-flex flex-column gap-3"></div>
-    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button></div>
-  </div></div></div>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Custom JS -->
-  <script src="js/main.js"></script>
 </body>
 </html>
