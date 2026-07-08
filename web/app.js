@@ -319,8 +319,8 @@ function indexJson(manifest) {
     formatVersion: 1,
     game: 'minecraft',
     versionId: '1.0.0',
-    name: 'GDCModpack',
-    summary: 'GangDrogaCity Modpack',
+    name: 'GangDrogaCity',
+    summary: 'Generato dal GangDrogaCity Web Launcher il ${new Date().toLocaleDateString()}',
     files: [],
     dependencies: {
       minecraft: manifest.mcVersion,
@@ -591,7 +591,7 @@ function renderPlan() {
   const c = plan.commit;
   // angolo in basso a sinistra, come la versione nel title screen vanilla
   $('commit').textContent =
-    `GDCModpack 1.0.0 (${branch !== 'main' ? branch + ' · ' : ''}` +
+    `(${branch !== 'main' ? branch + ' · ' : ''}` +
     `${c.sha.slice(0, 10)}${c.date ? ' · ' + new Date(c.date).toLocaleDateString('it-IT') : ''})`;
   $('planInfo').textContent =
     `${plan.filesTotal.toLocaleString('it-IT')} file · download ${fmtBytes(plan.downloadBytes)} · ` +
@@ -649,7 +649,7 @@ async function cycleBranch() {
 
 // Riga "persone online" come nella home FancyMenu (placeholder gdc_players):
 // qui i dati arrivano dal worker gdc-status (CORS aperto), aggiornati ogni 30s
-const STATUS_URL = 'https://gdc-status.keem.workers.dev/status';
+const STATUS_URL = 'https://status.gangdrogacity.xyz/';
 
 async function loadPlayers() {
   const el = $('playersLine');
