@@ -706,7 +706,7 @@ async function loadPlayers() {
         ? 'C’è 1 persona online in questo momento.'
         : `Ci sono ${n} persone online in questo momento.`;
     } else {
-      el.textContent = 'Il server è offline in questo momento.';
+      el.textContent = '';
     }
   } catch {
     el.textContent = '';

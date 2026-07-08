@@ -116,7 +116,7 @@
   #doneInfo .meta { color: #a8d8a8; }
 
   /* ---- consegna in corso: barra stile bossbar/XP ---- */
-  #progress { display: none; }
+  #progress { display: none; margin-top: 0; margin-bottom: 14px; }
   .phase { font-size: 15px; text-shadow: 2px 2px 0 var(--shadow); margin-bottom: 10px; }
   .spin {
     display: inline-block; width: 12px; height: 12px;
@@ -181,6 +181,18 @@
 <div class="screen">
   <img class="logo" src="logo.png" alt="GangDrogaCity">
 
+  <div id="progress" class="panel">
+    <div class="phase"><span class="spin"></span><span id="phaseLabel">Avvio…</span></div>
+    <div class="bar"><div id="barFill"></div><div class="segs"></div></div>
+    <div class="stats">
+      <span>file <b id="files">–</b></span>
+      <span><b id="mb">–</b></span>
+      <span><b id="speed">–</b></span>
+      <span>restano <b id="eta">–</b></span>
+    </div>
+    <div class="path" id="curPath"></div>
+  </div>
+
   <div class="stack">
     <button id="buildBtn" class="mcbtn" disabled><span>Inizia</span></button>
     <button id="buildLiteBtn" class="mcbtn" disabled><span>Inizia (modalità grafica di merda)</span></button>
@@ -202,17 +214,6 @@
     <div id="doneInfo"></div>
   </div>
 
-  <div id="progress" class="panel">
-    <div class="phase"><span class="spin"></span><span id="phaseLabel">Avvio…</span></div>
-    <div class="bar"><div id="barFill"></div><div class="segs"></div></div>
-    <div class="stats">
-      <span>file <b id="files">–</b></span>
-      <span><b id="mb">–</b></span>
-      <span><b id="speed">–</b></span>
-      <span>restano <b id="eta">–</b></span>
-    </div>
-    <div class="path" id="curPath"></div>
-  </div>
 </div>
 
 <div class="corner left" id="commit">GDCModpack 1.0.0</div>
