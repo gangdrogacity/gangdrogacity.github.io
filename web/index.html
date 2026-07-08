@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="GangDrogaCity Web Launcher — scarica il modpack ufficiale aggiornato all'ultimo commit, costruito direttamente nel tuo browser.">
+<title>GangDrogaCity Web Launcher</title>
+<link rel="icon" href="logo.png">
+<style>
+  /* Replica della home screen FancyMenu del modpack:
+     sfondo aereo della città con parallax, logo centrato, bottoni vanilla
+     Minecraft, riga "persone online", versioni negli angoli in basso. */
+  @font-face {
+    font-family: 'Monocraft'; /* pixel font open (OFL), vedi monocraft-LICENSE.txt */
+    src: url(monocraft.ttf) format('truetype');
+    font-display: swap;
+  }
+  :root {
+    --mc: 'Monocraft', 'Courier New', monospace;
+    --shadow: #3c3c3c;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; overflow-x: hidden; background: #000;
+    color: #fff; font-family: var(--mc);
+    -webkit-font-smoothing: none; font-smooth: never;
+  }
+
+  /* ---- sfondo con parallax (intensità 0.02 come nel layout) ---- */
+  #bg {
+    position: fixed; inset: -3%; z-index: -1;
+    background: url(bg.png) center / cover no-repeat;
+    transform: translate(0, 0) scale(1.02);
+    will-change: transform;
+  }
+
+  .screen {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 24px 16px 64px; gap: 0;
+  }
+
+  /* ---- logo: nel layout occupa la metà alta, con fade-in first_time ---- */
+  .logo {
+    width: min(492px, 78vw, 46vh);
+    image-rendering: auto;
+    filter: drop-shadow(0 10px 24px rgba(0,0,0,.8));
+    margin-bottom: 26px;
+    animation: fadeIn 1.1s ease both;
+  }
+  @keyframes fadeIn { from { opacity: 0; } }
+
+  .stack { display: flex; flex-direction: column; align-items: center; gap: 8px; width: min(548px, 92vw); }
+
+  /* ---- bottone vanilla Minecraft (widgets.png ricreato in CSS) ---- */
+  .mcbtn {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 54px; cursor: pointer; user-select: none;
+    font-family: var(--mc); font-size: 21px; color: #fff;
+    text-shadow: 2.5px 2.5px 0 var(--shadow);
+    text-decoration: none; text-align: center;
+    background-color: #6d6d6d;
+    background-image: linear-gradient(rgba(255,255,255,.13), rgba(255,255,255,0) 10%, rgba(0,0,0,0) 88%, rgba(0,0,0,.22));
+    border: 3px solid #060606;
+    box-shadow:
+      inset 0 3px 0 rgba(255,255,255,.28),
+      inset 3px 0 0 rgba(255,255,255,.12),
+      inset -3px -4px 0 rgba(0,0,0,.38),
+      0 4px 14px rgba(0,0,0,.55);
+    animation: fadeIn 1.1s ease both;
+  }
+  .mcbtn:hover:not(:disabled), a.mcbtn:hover {
+    border-color: #f5f5f5;
+    background-color: #767b8c;
+  }
+  .mcbtn:active:not(:disabled) { transform: translateY(1px); }
+  .mcbtn:disabled {
+    cursor: default; color: #a0a0a0; background-color: #4c4c4c;
+    text-shadow: 2px 2px 0 #262626;
+  }
+
+  /* ---- righe testo stile MC (ombra dura) ---- */
+  .mcline {
+    font-size: 16px; color: #fff; text-shadow: 2px 2px 0 var(--shadow);
+    margin-top: 10px; text-align: center; animation: fadeIn 1.4s ease both;
+    min-height: 20px;
+  }
+  .mcsub {
+    font-size: 12.5px; color: #c8c8c8; text-shadow: 1.5px 1.5px 0 #2c2c2c;
+    margin-top: 4px; text-align: center; animation: fadeIn 1.6s ease both;
+  }
+
+  /* ---- angoli in basso, come il title screen vanilla ---- */
+  .corner {
+    position: fixed; bottom: 6px; font-size: 13px; color: #fff;
+    text-shadow: 1.5px 1.5px 0 var(--shadow); pointer-events: none;
+  }
+  .corner.left { left: 8px; }
+  .corner.right { right: 8px; }
+
+  /* ---- pannelli (overlay scuro tipo MC) ---- */
+  .panel {
+    width: min(680px, 92vw); margin-top: 18px; padding: 14px 18px;
+    background: rgba(0, 0, 0, .62);
+    border: 2px solid rgba(255,255,255,.22);
+    animation: fadeIn .4s ease both;
+  }
+  #browserNote { display: none; color: #ffe27a; font-size: 13px; text-shadow: 1.5px 1.5px 0 #3a3010; }
+  #error { display: none; }
+  .wastedTitle { font-size: 22px; color: #ff5555; text-shadow: 2px 2px 0 #3a1010; }
+  .wastedMsg { font-size: 13px; color: #ffb0a6; text-shadow: 1.5px 1.5px 0 #301410; margin-top: 8px; word-break: break-word; }
+  #done { display: none; }
+  .doneTitle { font-size: 22px; color: #55ff55; text-shadow: 2px 2px 0 #103a10; }
+  #doneInfo { font-size: 13px; color: #d5ffd5; text-shadow: 1.5px 1.5px 0 #103010; margin-top: 8px; line-height: 1.7; }
+  #doneInfo .meta { color: #a8d8a8; }
+
+  /* ---- consegna in corso: barra stile bossbar/XP ---- */
+  #progress { display: none; }
+  .phase { font-size: 15px; text-shadow: 2px 2px 0 var(--shadow); margin-bottom: 10px; }
+  .spin {
+    display: inline-block; width: 12px; height: 12px;
+    background: #55ff55; box-shadow: 2px 2px 0 #103a10;
+    animation: blink 1s steps(2) infinite; margin-right: 10px;
+  }
+  @keyframes blink { 50% { opacity: .25; } }
+  .bar {
+    position: relative; height: 14px;
+    background: #1c1c1c; border: 2px solid #060606;
+    box-shadow: inset 0 2px 0 rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.12);
+    overflow: hidden;
+  }
+  #barFill {
+    height: 100%; width: 0%;
+    background: linear-gradient(#7cf87c, #3ddc3d 45%, #1faf1f);
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,.3);
+    transition: width .45s ease;
+  }
+  .segs {
+    position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 2px), rgba(0,0,0,.55) calc(10% - 2px) 10%);
+  }
+  .stats {
+    display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px;
+    font-size: 12.5px; color: #d8d8d8; text-shadow: 1.5px 1.5px 0 #2c2c2c;
+  }
+  .stats b { color: #fff; font-weight: 400; }
+  .path {
+    margin-top: 8px; font-size: 11px; color: #9a9a9a; text-shadow: 1px 1px 0 #222;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; direction: rtl; text-align: left;
+  }
+
+  /* ---- popup di benvenuto ---- */
+  #welcome {
+    position: fixed; inset: 0; z-index: 20;
+    background: rgba(0, 0, 0, .78);
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+  }
+  .wpanel {
+    width: min(560px, 94vw); padding: 22px 24px;
+    background: #141414; border: 2px solid rgba(255,255,255,.25);
+    box-shadow: 0 16px 60px rgba(0,0,0,.85);
+    animation: fadeIn .35s ease both;
+  }
+  .wtitle { font-size: 19px; color: #ffe27a; text-shadow: 2px 2px 0 #3a3010; margin-bottom: 12px; }
+  .wpanel p { font-size: 13px; line-height: 1.8; color: #e6e6e6; text-shadow: 1.5px 1.5px 0 #262626; margin: 0 0 12px; }
+  .wpanel p.wwarn { color: #ffd08a; text-shadow: 1.5px 1.5px 0 #33240e; }
+  .wpanel a { color: #8fd3ff; }
+  #welcomeBtn { height: 46px; font-size: 17px; margin-top: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .logo, .mcbtn, .mcline, .mcsub, .panel, .wpanel { animation: none !important; }
+    .spin { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+
+<div class="screen">
+  <img class="logo" src="logo.png" alt="GangDrogaCity">
+
+  <div class="stack">
+    <button id="buildBtn" class="mcbtn" disabled><span>Inizia</span></button>
+    <a class="mcbtn" href="https://gangdrogacity.xyz">Torna alla home</a>
+    <button id="branchBtn" class="mcbtn"><span id="branchLabel">Branch: main</span></button>
+    <div class="mcline" id="playersLine"></div>
+    <div class="mcsub" id="planInfo">caricamento…</div>
+  </div>
+
+  <div id="browserNote" class="panel">
+    Il tuo browser non supporta il salvataggio in streaming: la build funziona lo
+    stesso ma userà più memoria. Meglio Chrome o Edge su desktop.
+  </div>
+
+  <div id="error" class="panel"></div>
+
+  <div id="done" class="panel">
+    <div class="doneTitle">✓ Pacco pronto</div>
+    <div id="doneInfo"></div>
+  </div>
+
+  <div id="progress" class="panel">
+    <div class="phase"><span class="spin"></span><span id="phaseLabel">Avvio…</span></div>
+    <div class="bar"><div id="barFill"></div><div class="segs"></div></div>
+    <div class="stats">
+      <span>file <b id="files">–</b></span>
+      <span><b id="mb">–</b></span>
+      <span><b id="speed">–</b></span>
+      <span>restano <b id="eta">–</b></span>
+    </div>
+    <div class="path" id="curPath"></div>
+  </div>
+</div>
+
+<div class="corner left" id="commit">GDCModpack 1.0.0</div>
+<div class="corner right">GangDrogaCity</div>
+
+<div id="welcome">
+  <div class="wpanel">
+    <div class="wtitle">Benvenuto nel Web Launcher</div>
+    <p>Questa pagina genera un <b>.mrpack</b> del modpack GangDrogaCity aggiornato
+    all'ultimo commit, da importare in <b>Modrinth App</b> o <b>Prism Launcher</b>.</p>
+    <p class="wwarn">⚠ Consigliato solo per giocare su piattaforme <b>diverse da
+    Windows</b>: con il .mrpack gli aggiornamenti del modpack non sono automatici —
+    a ogni update dovrai rigenerare il pack e reimportarlo a mano. Su Windows usa
+    il <a href="https://gangdrogacity.xyz">launcher ufficiale</a>, che si aggiorna da solo.</p>
+    <button id="welcomeBtn" class="mcbtn">Ho capito</button>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
