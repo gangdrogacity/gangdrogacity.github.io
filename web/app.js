@@ -20,9 +20,6 @@ import { tarEntries } from './tar.js';
 
 const REPO = 'jamnaga/wtf-modpack';
 const BRANCH = 'main';
-// ⚠ DOPO il deploy di proxy-worker/ metti qui il suo URL
-// (es. 'https://gdc-tarball.<account>.workers.dev'). Se irraggiungibile la
-// pagina ripiega da sola sul download file-per-file.
 const TARBALL_PROXY = 'https://tar.gangdrogacity.xyz/';
 
 const EXCLUDE_TOP = new Set(['java', 'natives', 'lib']);
