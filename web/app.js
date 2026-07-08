@@ -40,6 +40,7 @@ const te = new TextEncoder();
 // ---- stato -----------------------------------------------------------------
 
 let plan = null; // { commit, ref, jsdRef, manifest, include, packages, ... }
+let activeBuildPlan = null; // variante effettivamente usata durante una build
 let building = false;
 let branch = BRANCH;   // cambiabile dal tasto «Branch: …»
 let branches = null;   // elenco branch del repo (caricato al primo click)
@@ -60,6 +61,7 @@ function setPhase(phase) {
 window.__mrpack = {
   progress,
   get plan() { return plan; },
+  get activeBuildPlan() { return activeBuildPlan; },
   get building() { return building; },
 };
 
@@ -87,6 +89,42 @@ function concat(chunks, total) {
   let off = 0;
   for (const c of chunks) { out.set(c, off); off += c.length; }
   return out;
+}
+
+function currentPlan() {
+  return activeBuildPlan ?? plan;
+}
+
+function isClientNamedMod(file) {
+  const path = String(file?.path ?? '').replaceAll('\\', '/');
+  const lowerPath = path.toLowerCase();
+  const name = lowerPath.split('/').pop() ?? '';
+  return lowerPath.startsWith('mods/') && name.includes('[client]');
+}
+
+function makeBuildVariant(skipClientMods = false) {
+  if (!skipClientMods) return plan;
+
+  const include = plan.include.filter((f) => !isClientNamedMod(f));
+  const removedClientMods = plan.include.length - include.length;
+  const removedClientModsBytes = plan.include.reduce((n, f) => n + (isClientNamedMod(f) ? f.size : 0), 0);
+  const lodCount = plan.packages.reduce((n, pk) => n + (pk.filesToExtract?.length ?? 0), 0);
+
+  return {
+    ...plan,
+    include,
+    filesTotal: include.length + 1 + lodCount,
+    bytesTotal: plan.bytesTotal - removedClientModsBytes,
+    downloadBytes: plan.downloadBytes - removedClientModsBytes,
+    skipClientMods,
+    removedClientMods,
+    removedClientModsBytes,
+  };
+}
+
+function setBuildButtonsDisabled(disabled) {
+  $('buildBtn').disabled = disabled;
+  $('buildLiteBtn')?.toggleAttribute('disabled', disabled);
 }
 
 // ---- rate limit (solo percorso fallback): pausa globale per host -------------
@@ -330,8 +368,9 @@ function indexJson(manifest) {
 }
 
 function partsIndex() {
+  const build = currentPlan();
   const map = new Map(); // path repo → { pkgIndex, partName, meta }
-  for (const [pkgIndex, pk] of plan.packages.entries()) {
+  for (const [pkgIndex, pk] of build.packages.entries()) {
     const metaByPath = new Map((pk.files ?? []).map((f) => [f.path, f]));
     for (const partName of pk.parts ?? []) {
       const p = `packages/${pk.name}/${partName}`;
@@ -345,8 +384,9 @@ function partsIndex() {
 // il browser li tiene su disco, la RAM del tab resta bassa). Se qualcosa va
 // storto qui lo zip non è ancora stato toccato → il fallback resta possibile.
 async function downloadArchive() {
+  const build = currentPlan();
   setPhase('download');
-  const url = `${PROXY.replace(/\/$/, '')}/tarball/${plan.ref}`;
+  const url = `${PROXY.replace(/\/$/, '')}/tarball/${build.ref}`;
   let res;
   try {
     res = await fetch(url, { cache: 'no-store' });
@@ -359,7 +399,7 @@ async function downloadArchive() {
   progress.source = 'tarball';
   // codeload non manda content-length (chunked): stima ~75% del contenuto
   progress.tarTotalEst = Number(res.headers.get('content-length'))
-    || Math.round(plan.downloadBytes * 0.75);
+    || Math.round(build.downloadBytes * 0.75);
 
   const blobParts = [];
   let cur = [];
@@ -384,9 +424,10 @@ async function downloadArchive() {
 
 // Fase 2: lavora l'archivio scaricato, tutto in locale (niente rete)
 async function packFromArchive(zip, sz, archiveBlob) {
+  const build = currentPlan();
   setPhase('pack');
 
-  const includeMap = new Map(plan.include.map((f) => [f.path, f]));
+  const includeMap = new Map(build.include.map((f) => [f.path, f]));
   const parts = partsIndex();
   const seen = new Set();
   const partsSeen = new Set();
@@ -427,7 +468,7 @@ async function packFromArchive(zip, sz, archiveBlob) {
   }
 
   if (seen.size !== includeMap.size) {
-    const missing = plan.include.map((f) => f.path).filter((p) => !seen.has(p));
+    const missing = build.include.map((f) => f.path).filter((p) => !seen.has(p));
     throw new Error(
       `${missing.length} file del manifest assenti nel commit (manifest non pushato?): ` +
       missing.slice(0, 5).join(', ') + (missing.length > 5 ? ', …' : ''),
@@ -440,7 +481,8 @@ async function packFromArchive(zip, sz, archiveBlob) {
 
 // Fallback: download file-per-file (jsDelivr@sha, poi raw), append in ordine
 async function buildPerFile(zip, sz) {
-  const { ref, jsdRef, include } = plan;
+  const build = currentPlan();
+  const { ref, jsdRef, include } = build;
   const RAW = `https://raw.githubusercontent.com/${REPO}/${ref}/`;
   const JSD = jsdRef ? `https://cdn.jsdelivr.net/gh/${REPO}@${jsdRef}/` : null;
   const encPath = (p) => p.split('/').map(encodeURIComponent).join('/');
@@ -491,8 +533,9 @@ async function buildPerFile(zip, sz) {
 
 // Estrae i package in MEMFS (già popolato di parti) e appende i file LOD
 async function extractAndAppendLods(zip, sz) {
+  const build = currentPlan();
   setPhase('lod');
-  for (const [i, pk] of plan.packages.entries()) {
+  for (const [i, pk] of build.packages.entries()) {
     if (!(pk.parts ?? []).length) continue;
     const partsDir = `/parts${i}`;
     const outDir = `/out${i}`;
@@ -552,15 +595,16 @@ async function extractAndAppendLods(zip, sz) {
 }
 
 async function buildPack(sink) {
+  const build = currentPlan();
   const zip = new ZipWriter(async (chunk) => {
     await sink.write(chunk);
     progress.zipBytes += chunk.length;
   });
 
-  await zip.addEntry('modrinth.index.json', [te.encode(JSON.stringify(indexJson(plan.manifest), null, 2))]);
+  await zip.addEntry('modrinth.index.json', [te.encode(JSON.stringify(indexJson(build.manifest), null, 2))]);
   progress.filesDone += 1;
 
-  const hasParts = plan.packages.some((pk) => (pk.parts ?? []).length);
+  const hasParts = build.packages.some((pk) => (pk.parts ?? []).length);
   const sz = hasParts ? await ensureSevenZip() : null;
 
   const entriesBefore = zip.entryCount;
@@ -596,7 +640,7 @@ function renderPlan() {
   $('planInfo').textContent =
     `${plan.filesTotal.toLocaleString('it-IT')} file · download ${fmtBytes(plan.downloadBytes)} · ` +
     `2,5 GB liberi su disco · ~3-4 minuti`;
-  $('buildBtn').disabled = false;
+  setBuildButtonsDisabled(false);
 }
 
 // ---- cambio branch (tasto ciclico stile opzioni MC) --------------------------
@@ -634,7 +678,7 @@ async function cycleBranch() {
     branch = list[(list.indexOf(branch) + 1) % list.length];
     $('branchLabel').textContent = `Branch: ${branch}`;
     plan = null;
-    $('buildBtn').disabled = true;
+    setBuildButtonsDisabled(true);
     $('error').style.display = 'none';
     $('done').style.display = 'none';
     $('planInfo').textContent = 'caricamento…';
@@ -725,32 +769,38 @@ function beforeUnload(e) {
   e.returnValue = '';
 }
 
-async function startBuild() {
+async function startBuild(skipClientMods = false) {
   if (building || !plan) return;
   $('error').style.display = 'none';
   $('done').style.display = 'none';
 
-  const tag = plan.commit.sha.startsWith('manifest-') ? plan.commit.sha : plan.commit.sha.slice(0, 10);
-  const filename = `GDCModpack-1.0.0-${tag}.mrpack`;
+  const build = makeBuildVariant(skipClientMods);
+  activeBuildPlan = build;
+
+  const tag = build.commit.sha.startsWith('manifest-') ? build.commit.sha : build.commit.sha.slice(0, 10);
+  const modeSuffix = skipClientMods ? '-no-client-mods' : '';
+  const filename = `GDCModpack-1.0.0-${tag}${modeSuffix}.mrpack`;
 
   // Il picker DEVE partire dal gesto utente, prima di qualsiasi await lungo
   let sink;
   try {
     sink = await makeSink(filename);
   } catch (e) {
+    activeBuildPlan = null;
     if (e?.name === 'AbortError') return; // annullato dall'utente
     showError(String(e?.message ?? e));
     return;
   }
 
   building = true;
-  const btnLabel = $('buildBtn').querySelector('span');
-  $('buildBtn').disabled = true;
+  const clickedBtn = skipClientMods ? $('buildLiteBtn') : $('buildBtn');
+  const btnLabel = clickedBtn?.querySelector('span');
+  setBuildButtonsDisabled(true);
   $('branchBtn').disabled = true;
   if (btnLabel) btnLabel.textContent = 'Attendi…';
   Object.assign(progress, {
-    phase: 'download', filesDone: 0, filesTotal: plan.filesTotal,
-    bytesDone: 0, bytesTotal: plan.bytesTotal, zipBytes: 0,
+    phase: 'download', filesDone: 0, filesTotal: build.filesTotal,
+    bytesDone: 0, bytesTotal: build.bytesTotal, zipBytes: 0,
     tarBytes: 0, tarTotalEst: 0,
     currentPath: '', startedAt: Date.now(), phaseStartedAt: Date.now(), source: '',
   });
@@ -761,10 +811,13 @@ async function startBuild() {
   try {
     const r = await buildPack(sink);
     await sink.close();
+    const modeLine = skipClientMods
+      ? `<br><span class="meta">Modalità grafica di merda: rimossi ${build.removedClientMods.toLocaleString('it-IT')} mod client (${fmtBytes(build.removedClientModsBytes)}).</span>`
+      : '';
     $('done').style.display = 'block';
     $('doneInfo').innerHTML =
       `<b>${filename}</b> — ${r.files.toLocaleString('it-IT')} file, ${fmtBytes(r.bytes)} ` +
-      `in ${Math.round((Date.now() - progress.startedAt) / 1000)}s. Benvenuto in città.<br>` +
+      `in ${Math.round((Date.now() - progress.startedAt) / 1000)}s. Benvenuto in città.${modeLine}<br>` +
       `Importalo in <b>Modrinth App</b> (o Prism): <span class="meta">Aggiungi istanza → Da file → seleziona il .mrpack</span>`;
   } catch (e) {
     console.error(e);
@@ -772,18 +825,20 @@ async function startBuild() {
     showError(String(e?.message ?? e));
   } finally {
     building = false;
+    activeBuildPlan = null;
     clearInterval(renderTimer);
     window.removeEventListener('beforeunload', beforeUnload);
     $('progress').style.display = 'none';
-    $('buildBtn').disabled = false;
+    setBuildButtonsDisabled(false);
     $('branchBtn').disabled = false;
-    if (btnLabel) btnLabel.textContent = 'Inizia';
+    if (btnLabel) btnLabel.textContent = skipClientMods ? 'Inizia (modalità grafica di merda)' : 'Inizia';
   }
 }
 
 // ---- avvio ------------------------------------------------------------------------
 
-$('buildBtn').addEventListener('click', startBuild);
+$('buildBtn').addEventListener('click', () => startBuild(false));
+$('buildLiteBtn')?.addEventListener('click', () => startBuild(true));
 $('welcomeBtn')?.addEventListener('click', () => $('welcome')?.remove());
 
 if (REF_OVERRIDE) {
