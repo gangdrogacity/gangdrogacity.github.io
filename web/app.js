@@ -643,7 +643,7 @@ function renderPlan() {
   setBuildButtonsDisabled(false);
 }
 
-// ---- cambio branch (tasto ciclico stile opzioni MC) --------------------------
+// ---- cambio branch (lista selezionabile) -------------------------------------
 
 async function ensureBranches() {
   if (branches) return branches;
@@ -653,41 +653,67 @@ async function ensureBranches() {
       cache: 'no-store',
     });
     if (r.ok) {
-      const names = (await r.json()).map((b) => b.name);
+      const names = (await r.json()).map((b) => b.name).filter(Boolean);
       if (names.length) {
         names.sort((a, b) => (a === 'main' ? -1 : b === 'main' ? 1 : a.localeCompare(b)));
         branches = names;
       }
     }
   } catch { /* API giù: fallback sotto */ }
-  if (!branches) {
-    // rate limit API: si accetta un nome scritto a mano
-    const name = prompt('API GitHub non raggiungibile. Nome del branch:', branch);
-    if (name?.trim() && name.trim() !== branch) branches = [branch, name.trim()];
-  }
+  branches ??= [branch];
+  if (!branches.includes(branch)) branches.unshift(branch);
   return branches;
 }
 
-async function cycleBranch() {
-  if (building) return;
-  const btn = $('branchBtn');
-  btn.disabled = true;
+function renderBranchSelect(list, disabled = false) {
+  const select = $('branchSelect');
+  if (!select) return;
+  select.innerHTML = '';
+  for (const name of list) {
+    const option = document.createElement('option');
+    option.value = name;
+    option.textContent = `Branch: ${name}`;
+    option.selected = name === branch;
+    select.appendChild(option);
+  }
+  select.disabled = disabled || building || list.length < 2;
+}
+
+async function loadBranchSelect() {
+  const select = $('branchSelect');
+  if (!select) return;
+  select.disabled = true;
+  select.innerHTML = `<option value="${escapeHtml(branch)}">Caricamento branch…</option>`;
   try {
-    const list = await ensureBranches();
-    if (!list || list.length < 2) return;
-    branch = list[(list.indexOf(branch) + 1) % list.length];
-    $('branchLabel').textContent = `Branch: ${branch}`;
-    plan = null;
-    setBuildButtonsDisabled(true);
-    $('error').style.display = 'none';
-    $('done').style.display = 'none';
-    $('planInfo').textContent = 'caricamento…';
+    renderBranchSelect(await ensureBranches());
+  } catch (e) {
+    console.warn('branch list non leggibile:', e);
+    renderBranchSelect([branch], true);
+  }
+}
+
+async function selectBranch() {
+  if (building) return;
+  const select = $('branchSelect');
+  if (!select || !select.value || select.value === branch) return;
+
+  const previousBranch = branch;
+  branch = select.value;
+  select.disabled = true;
+  plan = null;
+  setBuildButtonsDisabled(true);
+  $('error').style.display = 'none';
+  $('done').style.display = 'none';
+  $('planInfo').textContent = 'caricamento…';
+
+  try {
     await loadPlan();
     renderPlan();
+    renderBranchSelect(await ensureBranches());
   } catch (e) {
+    branch = previousBranch;
     $('planInfo').textContent = '⚠ branch non leggibile: ' + String(e?.message ?? e);
-  } finally {
-    btn.disabled = false;
+    renderBranchSelect(await ensureBranches().catch(() => [branch]));
   }
 }
 
@@ -796,7 +822,7 @@ async function startBuild(skipClientMods = false) {
   const clickedBtn = skipClientMods ? $('buildLiteBtn') : $('buildBtn');
   const btnLabel = clickedBtn?.querySelector('span');
   setBuildButtonsDisabled(true);
-  $('branchBtn').disabled = true;
+  $('branchSelect').disabled = true;
   if (btnLabel) btnLabel.textContent = 'Attendi…';
   Object.assign(progress, {
     phase: 'download', filesDone: 0, filesTotal: build.filesTotal,
@@ -830,7 +856,7 @@ async function startBuild(skipClientMods = false) {
     window.removeEventListener('beforeunload', beforeUnload);
     $('progress').style.display = 'none';
     setBuildButtonsDisabled(false);
-    $('branchBtn').disabled = false;
+    renderBranchSelect(branches ?? [branch]);
     if (btnLabel) btnLabel.textContent = skipClientMods ? 'Inizia (modalità grafica di merda)' : 'Inizia';
   }
 }
@@ -842,9 +868,9 @@ $('buildLiteBtn')?.addEventListener('click', () => startBuild(true));
 $('welcomeBtn')?.addEventListener('click', () => $('welcome')?.remove());
 
 if (REF_OVERRIDE) {
-  $('branchBtn').style.display = 'none'; // modalità test con ?ref=
+  $('branchSelect').style.display = 'none'; // modalità test con ?ref=
 } else {
-  $('branchBtn').addEventListener('click', cycleBranch);
+  $('branchSelect').addEventListener('change', selectBranch);
 }
 
 if (!FORCE_BLOB && !('showSaveFilePicker' in window)) {
@@ -866,7 +892,10 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
 loadPlayers();
 setInterval(loadPlayers, 30_000);
 
-loadPlan().then(renderPlan).catch((e) => {
+loadPlan().then(async () => {
+  renderPlan();
+  if (!REF_OVERRIDE) await loadBranchSelect();
+}).catch((e) => {
   $('planInfo').textContent = '⚠ impossibile leggere il manifest da GitHub';
   showError('impossibile leggere il manifest da GitHub: ' + String(e?.message ?? e));
 });
